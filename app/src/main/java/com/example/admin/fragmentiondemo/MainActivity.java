@@ -3,13 +3,16 @@ package com.example.admin.fragmentiondemo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import me.yokeyword.fragmentation_swipeback.SwipeBackActivity;
 
-    private TextView mTextMessage;
+public class MainActivity extends SwipeBackActivity {
+
+    HomeFragment homeFragment;
+    DashboardFragment dashboardFragment;
+    NotificationFragment notificationFragment;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -18,13 +21,13 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    mTextMessage.setText( R.string.title_home );
+                    showHideFragment( homeFragment );
                     return true;
                 case R.id.navigation_dashboard:
-                    mTextMessage.setText( R.string.title_dashboard );
+                    showHideFragment( dashboardFragment );
                     return true;
                 case R.id.navigation_notifications:
-                    mTextMessage.setText( R.string.title_notifications );
+                    showHideFragment( notificationFragment );
                     return true;
             }
             return false;
@@ -35,10 +38,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_main );
-
-        mTextMessage = (TextView) findViewById( R.id.message );
         BottomNavigationView navigation = (BottomNavigationView) findViewById( R.id.navigation );
         navigation.setOnNavigationItemSelectedListener( mOnNavigationItemSelectedListener );
+
+        homeFragment = findFragment( HomeFragment.class );
+        if (homeFragment == null) {
+            homeFragment = HomeFragment.newInstance( "HomeFragment", "第一张" );
+            dashboardFragment = DashboardFragment.newInstance( "DashboardFragment", "第二张" );
+            notificationFragment = NotificationFragment.newInstance( "NotificationFragment", "第三张" );
+            loadMultipleRootFragment( R.id.fl_container, 0, homeFragment, dashboardFragment, notificationFragment );
+        } else {
+            dashboardFragment = findFragment( DashboardFragment.class );
+            notificationFragment = findFragment( NotificationFragment.class );
+        }
+
+
     }
 
 }
